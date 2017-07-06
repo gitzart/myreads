@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
 class ListBooks extends Component {
-  static proTypes = {
+  static propTypes = {
     'books': PropTypes.array.isRequired
   }
 

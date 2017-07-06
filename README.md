@@ -1,3 +1,3 @@
 # myreads
 
-A bookshelf app to help you organize the books by category.
+A bookshelf app for organizing books.

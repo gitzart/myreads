@@ -7,31 +7,23 @@ import './App.css'
 class BooksApp extends React.Component {
   state = {
     books: []
-    //   {
-    //     title: 'To Kill a Mockingbird',
-    //     authors: ['Harper Lee'],
-    //     shelf: 'currentlyReading',
-    //     imageLinks: {
-    //       smallThumbnail: '',
-    //       thumbnail: 'http://books.google.com/books/content?id=PGR2AwAAQBAJ&printsec=frontcover&img=1&zoom=1&imgtk=AFLRE73-GnPVEyb7MOCxDzOYF1PTQRuf6nCss9LMNOSWBpxBrz8Pm2_mFtWMMg_Y1dx92HT7cUoQBeSWjs3oEztBVhUeDFQX6-tWlWz1-feexS0mlJPjotcwFqAg6hBYDXuK_bkyHD-y&source=gbs_api'
-    //     }
-    //   },
-    //   {
-    //     title: "Ender's Game",
-    //     authors: ['Orson Scott Card'],
-    //     shelf: 'currentlyReading',
-    //     imageLinks: {
-    //       smallThumbnail: '',
-    //       thumbnail: 'http://books.google.com/books/content?id=yDtCuFHXbAYC&printsec=frontcover&img=1&zoom=1&imgtk=AFLRE72RRiTR6U5OUg3IY_LpHTL2NztVWAuZYNFE8dUuC0VlYabeyegLzpAnDPeWxE6RHi0C2ehrR9Gv20LH2dtjpbcUcs8YnH5VCCAH0Y2ICaKOTvrZTCObQbsfp4UbDqQyGISCZfGN&source=gbs_api'
-    //     }
-    //   }
-    // ]
   }
 
   componentDidMount = () => {
-    BooksAPI.getAll().then((books) => {
+    BooksAPI.getAll().then(books => {
       this.setState({ books: books })
     })
+  }
+
+  moveShelf = (book, shelf) => {
+    this.setState(state => (
+      {books: state.books.filter(b => book.id !== b.id)}
+    ))
+    book.shelf = shelf
+    this.setState(state => (
+      {books: state.books.concat([ book ])}
+    ))
+    BooksAPI.update(book, shelf)
   }
 
   render() {
@@ -63,9 +55,10 @@ class BooksApp extends React.Component {
                   <h2 className="bookshelf-title">Currently Reading</h2>
                   <div className="bookshelf-books">
                     <ListBooks
-                      books={this.state.books.filter((book) => (
+                      books={this.state.books.filter(book => (
                         book.shelf === 'currentlyReading'
                       ))}
+                      onMoveShelf={this.moveShelf}
                     />
                   </div>
                 </div>
@@ -73,9 +66,10 @@ class BooksApp extends React.Component {
                   <h2 className="bookshelf-title">Want to Read</h2>
                   <div className="bookshelf-books">
                     <ListBooks
-                      books={this.state.books.filter((book) => (
+                      books={this.state.books.filter(book => (
                         book.shelf === 'wantToRead'
                       ))}
+                      onMoveShelf={this.moveShelf}
                     />
                   </div>
                 </div>
@@ -83,9 +77,10 @@ class BooksApp extends React.Component {
                   <h2 className="bookshelf-title">Read</h2>
                   <div className="bookshelf-books">
                     <ListBooks
-                      books={this.state.books.filter((book) => (
+                      books={this.state.books.filter(book => (
                         book.shelf === 'read'
                       ))}
+                      onMoveShelf={this.moveShelf}
                     />
                   </div>
                 </div>

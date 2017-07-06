@@ -9,7 +9,7 @@ class ListBooks extends Component {
   render () {
     return (
       <ol className="books-grid">
-        {this.props.books.map((book) => (
+        {this.props.books.map(book => (
           <li key={book.id}>
             <div className="book">
               <div className="book-top">
@@ -22,7 +22,11 @@ class ListBooks extends Component {
                   }}>
                 </div>
                 <div className="book-shelf-changer">
-                  <select>
+                  <select
+                    value={book.shelf}
+                    onChange={e => (
+                      this.props.onMoveShelf(book, e.target.value)
+                    )}>
                     <option value="none" disabled>Move to...</option>
                     <option value="currentlyReading">Currently Reading</option>
                     <option value="wantToRead">Want to Read</option>

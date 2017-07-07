@@ -1,21 +1,23 @@
 import React from 'react'
 import { Route, Link } from 'react-router-dom'
 import * as BooksAPI from './BooksAPI'
-import ListBooks from './ListBooks'
+import BookShelves from './BookShelves'
+import SearchBook from './SearchBook'
 import './App.css'
 
 class BooksApp extends React.Component {
   state = {
     books: [],
-    searchedBooks: [],
-    query: ''
   }
 
-  componentDidMount = () => {
+  // Get all the books which belong to shelves
+  getBooks = () => (
     BooksAPI.getAll().then(
       books => this.setState({ books: books })
     )
-  }
+  )
+
+  componentDidMount = () => this.getBooks()
 
   addBook = (book) => (
     this.setState(
@@ -30,43 +32,18 @@ class BooksApp extends React.Component {
   )
 
   moveShelf = (book, newShelf) => {
-    BooksAPI.update(book, newShelf)
-    this.removeBook(book)
-    book.shelf = newShelf
-    this.addBook(book)
-  }
-
-  searchBook = (query) => {
-    BooksAPI.search(query).then(
-      books => this.setState({ searchedBooks: books })
-    )
+    BooksAPI.update(book, newShelf).then(() => this.getBooks())
+    // BooksAPI.update(book, newShelf)
+    // this.removeBook(book)
+    // book.shelf = newShelf
+    // this.addBook(book)
   }
 
   render() {
     return (
       <div className="app">
         <Route path='/search' render={() => (
-          <div className="search-books">
-            <div className="search-books-bar">
-              <Link to='/' className="close-search">Close</Link>
-              <div className="search-books-input-wrapper">
-                <input
-                  type="text"
-                  placeholder="Search by title or author"
-                  onChange={e => {
-                    this.setState({ query: e.target.value })
-                    this.searchBook(this.state.query)
-                  }}
-                />
-              </div>
-            </div>
-            <div className="search-books-results">
-              <ListBooks
-                books={this.state.searchedBooks}
-                onMoveShelf={this.moveShelf}
-              />
-            </div>
-          </div>
+          <SearchBook onMoveShelf={this.moveShelf} />
         )}>
         </Route>
 
@@ -75,43 +52,14 @@ class BooksApp extends React.Component {
             <div className="list-books-title">
               <h1>MyReads</h1>
             </div>
+
             <div className="list-books-content">
-              <div>
-                <div className="bookshelf">
-                  <h2 className="bookshelf-title">Currently Reading</h2>
-                  <div className="bookshelf-books">
-                    <ListBooks
-                      books={this.state.books.filter(
-                        book => book.shelf === 'currentlyReading'
-                      )}
-                      onMoveShelf={this.moveShelf}
-                    />
-                  </div>
-                </div>
-                <div className="bookshelf">
-                  <h2 className="bookshelf-title">Want to Read</h2>
-                  <div className="bookshelf-books">
-                    <ListBooks
-                      books={this.state.books.filter(
-                        book => book.shelf === 'wantToRead'
-                      )}
-                      onMoveShelf={this.moveShelf}
-                    />
-                  </div>
-                </div>
-                <div className="bookshelf">
-                  <h2 className="bookshelf-title">Read</h2>
-                  <div className="bookshelf-books">
-                    <ListBooks
-                      books={this.state.books.filter(
-                        book => book.shelf === 'read'
-                      )}
-                      onMoveShelf={this.moveShelf}
-                    />
-                  </div>
-                </div>
-              </div>
+              <BookShelves
+                books={this.state.books}
+                onMoveShelf={this.moveShelf}
+              />
             </div>
+
             <div className="open-search">
               <Link to='/search'>Add a book</Link>
             </div>

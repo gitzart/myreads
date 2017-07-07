@@ -3,13 +3,16 @@ import PropTypes from 'prop-types'
 
 class ListBooks extends Component {
   static propTypes = {
-    'books': PropTypes.array.isRequired
+    books: PropTypes.array.isRequired,
+    onMoveShelf: PropTypes.func.isRequired
   }
 
   render () {
+    const { books, onMoveShelf } = this.props
+
     return (
       <ol className="books-grid">
-        {this.props.books.map(book => (
+        {books.map(book => (
           <li key={book.id}>
             <div className="book">
               <div className="book-top">
@@ -24,9 +27,7 @@ class ListBooks extends Component {
                 <div className="book-shelf-changer">
                   <select
                     value={book.shelf}
-                    onChange={e => (
-                      this.props.onMoveShelf(book, e.target.value)
-                    )}>
+                    onChange={e => (onMoveShelf(book, e.target.value))}>
                     <option value="none" disabled>Move to...</option>
                     <option value="currentlyReading">Currently Reading</option>
                     <option value="wantToRead">Want to Read</option>

@@ -6,24 +6,40 @@ import './App.css'
 
 class BooksApp extends React.Component {
   state = {
-    books: []
+    books: [],
+    searchedBooks: [],
+    query: ''
   }
 
   componentDidMount = () => {
-    BooksAPI.getAll().then(books => {
-      this.setState({ books: books })
-    })
+    BooksAPI.getAll().then(
+      books => this.setState({ books: books })
+    )
   }
 
-  moveShelf = (book, shelf) => {
-    this.setState(state => (
-      {books: state.books.filter(b => book.id !== b.id)}
-    ))
-    book.shelf = shelf
-    this.setState(state => (
-      {books: state.books.concat([ book ])}
-    ))
-    BooksAPI.update(book, shelf)
+  addBook = (book) => (
+    this.setState(
+      state => ({ books: state.books.concat([ book ]) })
+    )
+  )
+
+  removeBook = (book) => (
+    this.setState(
+      state => ({ books: state.books.filter(b => b.id !== book.id) })
+    )
+  )
+
+  moveShelf = (book, newShelf) => {
+    BooksAPI.update(book, newShelf)
+    this.removeBook(book)
+    book.shelf = newShelf
+    this.addBook(book)
+  }
+
+  searchBook = (query) => {
+    BooksAPI.search(query).then(
+      books => this.setState({ searchedBooks: books })
+    )
   }
 
   render() {
@@ -34,11 +50,21 @@ class BooksApp extends React.Component {
             <div className="search-books-bar">
               <Link to='/' className="close-search">Close</Link>
               <div className="search-books-input-wrapper">
-                <input type="text" placeholder="Search by title or author"/>
+                <input
+                  type="text"
+                  placeholder="Search by title or author"
+                  onChange={e => {
+                    this.setState({ query: e.target.value })
+                    this.searchBook(this.state.query)
+                  }}
+                />
               </div>
             </div>
             <div className="search-books-results">
-              <ol className="books-grid"></ol>
+              <ListBooks
+                books={this.state.searchedBooks}
+                onMoveShelf={this.moveShelf}
+              />
             </div>
           </div>
         )}>
@@ -55,9 +81,9 @@ class BooksApp extends React.Component {
                   <h2 className="bookshelf-title">Currently Reading</h2>
                   <div className="bookshelf-books">
                     <ListBooks
-                      books={this.state.books.filter(book => (
-                        book.shelf === 'currentlyReading'
-                      ))}
+                      books={this.state.books.filter(
+                        book => book.shelf === 'currentlyReading'
+                      )}
                       onMoveShelf={this.moveShelf}
                     />
                   </div>
@@ -66,9 +92,9 @@ class BooksApp extends React.Component {
                   <h2 className="bookshelf-title">Want to Read</h2>
                   <div className="bookshelf-books">
                     <ListBooks
-                      books={this.state.books.filter(book => (
-                        book.shelf === 'wantToRead'
-                      ))}
+                      books={this.state.books.filter(
+                        book => book.shelf === 'wantToRead'
+                      )}
                       onMoveShelf={this.moveShelf}
                     />
                   </div>
@@ -77,9 +103,9 @@ class BooksApp extends React.Component {
                   <h2 className="bookshelf-title">Read</h2>
                   <div className="bookshelf-books">
                     <ListBooks
-                      books={this.state.books.filter(book => (
-                        book.shelf === 'read'
-                      ))}
+                      books={this.state.books.filter(
+                        book => book.shelf === 'read'
+                      )}
                       onMoveShelf={this.moveShelf}
                     />
                   </div>

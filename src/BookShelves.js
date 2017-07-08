@@ -1,38 +1,33 @@
-import React, { Component } from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
 import ListBooks from './ListBooks'
 
-class BookShelves extends Component {
-  static propTypes = {
-    onMoveShelf: PropTypes.func.isRequired
-  }
+const shelves = ['currentlyReading', 'wantToRead', 'read']
 
-  state = {
-    shelves: ['currentlyReading', 'wantToRead', 'read'],
-  }
+function BookShelves(props) {
+  const { books, onMoveShelf } = props
 
-  render () {
-    const { shelves } = this.state
-    const { books, onMoveShelf } = this.props
-
-    return (
-      <div>
-        {shelves.map(shelf => (
-          <div key={shelf} className="bookshelf">
-            <h2 className="bookshelf-title">{shelf}</h2>
-            <div className="bookshelf-books">
-              <ListBooks
-                books={books.filter(
-                  book => book.shelf === shelf
-                )}
-                onMoveShelf={onMoveShelf}
-              />
-            </div>
+  return (
+    <div>
+      {shelves.map(shelf => (
+        <div key={shelf} className="bookshelf">
+          <h2 className="bookshelf-title">{shelf}</h2>
+          <div className="bookshelf-books">
+            <ListBooks
+              books={books.filter(
+                book => book.shelf === shelf
+              )}
+              onMoveShelf={onMoveShelf}
+            />
           </div>
-        ))}
-      </div>
-    )
-  }
+        </div>
+      ))}
+    </div>
+  )
+}
+
+BookShelves.propTypes = {
+  onMoveShelf: PropTypes.func.isRequired
 }
 
 export default BookShelves

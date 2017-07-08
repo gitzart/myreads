@@ -6,6 +6,7 @@ import ListBooks from './ListBooks'
 
 class SearchBook extends Component {
   static propTypes = {
+    isOnShelf: PropTypes.func.isRequired,
     onMoveShelf: PropTypes.func.isRequired
   }
 
@@ -19,10 +20,14 @@ class SearchBook extends Component {
 
   searchBook = (query) => (
     BooksAPI.search(query).then(
-      books => {
+      results => {
         // Result exists and it's not an error
-        if (books && (!books.error)) {
-          this.setState({ results: books })
+        if (results && (!results.error)) {
+          for (const book of results) {
+            const b = this.props.isOnShelf(book)
+            book.shelf = b ? b.shelf : 'none'
+          }
+          this.setState({ results })
         }
       }
     )

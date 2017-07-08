@@ -13,7 +13,7 @@ class BooksApp extends React.Component {
   // Get all the books which belong to shelves
   getBooks = () => (
     BooksAPI.getAll().then(
-      books => this.setState({ books: books })
+      books => this.setState({ books })
     )
   )
 
@@ -39,11 +39,21 @@ class BooksApp extends React.Component {
     // this.addBook(book)
   }
 
+  isOnShelf = (book) => {
+    for (const b of this.state.books) {
+      if (b.id === book.id)
+        return b
+    }
+  }
+
   render() {
     return (
       <div className="app">
         <Route path='/search' render={() => (
-          <SearchBook onMoveShelf={this.moveShelf} />
+          <SearchBook
+            isOnShelf={this.isOnShelf}
+            onMoveShelf={this.moveShelf}
+          />
         )}>
         </Route>
 
